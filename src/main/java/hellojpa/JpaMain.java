@@ -43,6 +43,8 @@ public class JpaMain {
 
             member1.getName();
 
+            member1.getId();
+
 //            Movie movie = new Movie();
 //            movie.setName("바람");
 //            movie.setPrice(1000);
