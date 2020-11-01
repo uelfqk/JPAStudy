@@ -41,7 +41,7 @@ public class JpaMain {
 
             member1.getAddress().setCity("zzz-");
 
-
+            member1.getName();
 
 //            Movie movie = new Movie();
 //            movie.setName("바람");
