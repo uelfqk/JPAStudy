@@ -6,7 +6,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 public class JpaMain {
@@ -23,51 +27,74 @@ public class JpaMain {
         tx.begin();
 
         try {
-            TestClass test = new TestClass.TestClassBuilder("i9", "500GB")
-                    .setGraphicCardEnabled(true)
-                    .setBluetoothEnabled(true)
-                    .build();
+            // JPQL
+            // JPA Crieria
 
-            test.getCpu();
-            test.getHdd();
-            test.isGraphicCardEnabled();
-            test.isBluetoothEnabled();
+            CriteriaBuilder cb = em.getCriteriaBuilder();
 
-            Member member = new Member();
+            CriteriaQuery<Member> query = cb.createQuery(Member.class);
 
-            member.setName("root");
-            member.setAddress(new Address("111", "222", "333"));
+            Root<Member> m = query.from(Member.class);
 
-            member.getFavoriteFoods().add("치킨");
-            member.getFavoriteFoods().add("족발");
-            member.getFavoriteFoods().add("피자");
+            CriteriaQuery<Member> cq = query.select(m).where(cb.equal(m.get("name"), "kim"));
 
-            member.getAddressHistory().add(new AddressEntity("city", "street", "zipcode"));
-            member.getAddressHistory().add(new AddressEntity("city1", "street1", "zipcode1"));
+            List<Member> result = em.createQuery(cq).getResultList();
 
-            // 라이프사이클이 같이 돌아간다.
-            // 값타입 컬렉션도 본인의 생명주기가 없다.
-            // 모든 컬렉션의 생명주기가 엔티티에 의존한다.
-            em.persist(member);
+            List<Member> result = em.createQuery(
+                    "select m from Member m where m.name like '%kim%'",
+                    Member.class
+            ).getResultList();
 
-            em.flush();
-            em.clear();
+            // QueryDSL
+            // 네이티브 SQL
 
-            Member findMember = em.find(Member.class, member.getId());
+            // JDBC API 직접 사용, MyBatis, Spring jdbcTemplate 함께 사용 가능
 
-            Set<String> favoriteFoods = findMember.getFavoriteFoods();
-            for(String favoriteFood : favoriteFoods) {
-                System.out.println("favoriteFoods = " + favoriteFood);
-            }
-            Address a = findMember.getAddress();
-            findMember.setAddress(new Address("newCity", a.getStreet(), a.getZipcode()));
-
-            //치킨 => 한식
-            findMember.getFavoriteFoods().remove("치킨");
-            findMember.getFavoriteFoods().add("한식");
-
-            findMember.getAddressHistory().remove(new AddressEntity("city", "street", "zipcode"));
-            findMember.getAddressHistory().add(new AddressEntity("city2", "street2", "zipcode2"));
+//            TestClass test = new TestClass.TestClassBuilder("i9", "500GB")
+//                    .setGraphicCardEnabled(true)
+//                    .setBluetoothEnabled(true)
+//                    .build();
+//
+//            test.getCpu();
+//            test.getHdd();
+//            test.isGraphicCardEnabled();
+//            test.isBluetoothEnabled();
+//
+//            Member member = new Member();
+//
+//            member.setName("root");
+//            member.setAddress(new Address("111", "222", "333"));
+//
+//            member.getFavoriteFoods().add("치킨");
+//            member.getFavoriteFoods().add("족발");
+//            member.getFavoriteFoods().add("피자");
+//
+//            member.getAddressHistory().add(new AddressEntity("city", "street", "zipcode"));
+//            member.getAddressHistory().add(new AddressEntity("city1", "street1", "zipcode1"));
+//
+//            // 라이프사이클이 같이 돌아간다.
+//            // 값타입 컬렉션도 본인의 생명주기가 없다.
+//            // 모든 컬렉션의 생명주기가 엔티티에 의존한다.
+//            em.persist(member);
+//
+//            em.flush();
+//            em.clear();
+//
+//            Member findMember = em.find(Member.class, member.getId());
+//
+//            Set<String> favoriteFoods = findMember.getFavoriteFoods();
+//            for(String favoriteFood : favoriteFoods) {
+//                System.out.println("favoriteFoods = " + favoriteFood);
+//            }
+//            Address a = findMember.getAddress();
+//            findMember.setAddress(new Address("newCity", a.getStreet(), a.getZipcode()));
+//
+//            //치킨 => 한식
+//            findMember.getFavoriteFoods().remove("치킨");
+//            findMember.getFavoriteFoods().add("한식");
+//
+//            findMember.getAddressHistory().remove(new AddressEntity("city", "street", "zipcode"));
+//            findMember.getAddressHistory().add(new AddressEntity("city2", "street2", "zipcode2"));
 
             //Address address = new Address();
             //Address address1 = new Address();

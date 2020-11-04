@@ -55,7 +55,7 @@ public class Member extends BaseEntity {
 //        this.addressHistory = addressHistory;
 //    }
 
-    public List<AddressEntity> getAddressHistory() {
+    public List<AddressEntity> History() {
         return addressHistory;
     }
 
