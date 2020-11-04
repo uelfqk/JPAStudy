@@ -38,8 +38,6 @@ public class JpaMain {
 
             CriteriaQuery<Member> cq = query.select(m).where(cb.equal(m.get("name"), "kim"));
 
-            List<Member> result = em.createQuery(cq).getResultList();
-
             List<Member> result = em.createQuery(
                     "select m from Member m where m.name like '%kim%'",
                     Member.class
