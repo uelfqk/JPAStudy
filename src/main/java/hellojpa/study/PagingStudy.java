@@ -1,4 +1,4 @@
-package hellojpa;
+package hellojpa.study;
 
 import domain.Member;
 
@@ -8,9 +8,9 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.util.List;
 
-public class Paging {
+public class PagingStudy {
 
-    public void PagingStudy() {
+    public void Paging() {
         // 웹서버가 실행될때 1개만 생성되는것이다.
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
 

@@ -1,4 +1,4 @@
-package hellojpa;
+package hellojpa.study;
 
 import domain.Member;
 
@@ -12,7 +12,7 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 public class CriteriaStudy {
-    public void CriteriaStudy() {
+    public void Criteria() {
         // 웹서버가 실행될때 1개만 생성되는것이다.
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
 

@@ -35,6 +35,30 @@ public class Member extends BaseEntity {
     @Embedded
     private Period workPeriod;
 
+    @Embedded
+    private Address address;
+
+    @OneToMany(mappedBy = "member")
+    private List<Order> orders = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    private Team team;
+
+    public List<AddressEntity> getAddressHistory() {
+        return addressHistory;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    // 연관관계 편의 메서드
+    public void changeTeam(Team team) {
+        this.team = team;
+        team.getMembers().add(this);
+    }
+
     public Period getWorkPeriod() {
         return workPeriod;
     }
@@ -75,11 +99,6 @@ public class Member extends BaseEntity {
         this.address = address;
     }
 
-    @Embedded
-    private Address address;
-
-    @OneToMany(mappedBy = "member")
-    private List<Order> orders = new ArrayList<>();
 
     public Long getId() {
         return id;
