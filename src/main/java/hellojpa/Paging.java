@@ -1,21 +1,16 @@
 package hellojpa;
 
-import domain.*;
+import domain.Member;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import java.time.LocalDateTime;
 import java.util.List;
 
-public class JpaMain {
+public class Paging {
 
-    public static void main(String[] args) {
-
+    public void PagingStudy() {
         // 웹서버가 실행될때 1개만 생성되는것이다.
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
 
@@ -69,7 +64,5 @@ public class JpaMain {
         }
 
         emf.close();
-
-
     }
 }

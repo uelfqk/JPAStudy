@@ -3,7 +3,9 @@ package domain;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Member extends BaseEntity {
@@ -15,11 +17,50 @@ public class Member extends BaseEntity {
 
     private String name;
 
+    @ElementCollection
+    @CollectionTable(name = "favorite_food", joinColumns =
+    @JoinColumn(name = "member_id"))
+    @Column(name = "food_name")
+    private Set<String> favoriteFoods = new HashSet<>();
+
+//    @ElementCollection
+//    @CollectionTable(name = "address_history", joinColumns =
+//    @JoinColumn(name = "member_id"))
+//    private List<Address> addressHistory = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "member_id")
+    private List<AddressEntity> addressHistory = new ArrayList<>();
+
     @Embedded
     private Period workPeriod;
 
     public Period getWorkPeriod() {
         return workPeriod;
+    }
+
+    public Set<String> getFavoriteFoods() {
+        return favoriteFoods;
+    }
+
+    public void setFavoriteFoods(Set<String> favoriteFoods) {
+        this.favoriteFoods = favoriteFoods;
+    }
+
+//    public List<Address> getAddressHistory() {
+//        return addressHistory;
+//    }
+//
+//    public void setAddressHistory(List<Address> addressHistory) {
+//        this.addressHistory = addressHistory;
+//    }
+
+    public List<AddressEntity> History() {
+        return addressHistory;
+    }
+
+    public void setAddressHistory(List<AddressEntity> addressHistory) {
+        this.addressHistory = addressHistory;
     }
 
     public void setWorkPeriod(Period workPeriod) {
