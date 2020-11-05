@@ -9,6 +9,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class JpaMain {
 
@@ -20,28 +21,54 @@ public class JpaMain {
         EntityManager em = emf.createEntityManager();
 
         EntityTransaction tx = em.getTransaction();
-
+        //aaaa
         tx.begin();
 
         try {
-            Address address = new Address();
-            address.setCity("111");
-            address.setStreet("111");
-            address.setZipcode("111");
 
-            Member member1 = new Member();
-            member1.setName("member1");
-            member1.setAddress(address);
-            em.persist(member1);
+            for (int i = 0; i < 100; i++) {
+                Member member = new Member();
+                member.setName("member" + i);
+                Address address = new Address();
+                address.setCity("Incheon");
+                address.setStreet("Namdong");
+                address.setZipcode("ci" + i);
+                member.setAddress(address);
+                em.persist(member);
+            }
 
-            Member member2 = new Member();
-            member2.setName("member2");
-            member2.setAddress(address);
-            em.persist(member2);
+            /* select
+        m
+    from
+        Member m
+    order by
+        m.id desc */
+//            select
+//            member0_.member_id as member_i1_4_,
+//                    member0_.createBy as createBy2_4_,
+//            member0_.createDate as createDa3_4_,
+//                    member0_.lastModifyBy as lastModi4_4_,
+//            member0_.lastModifyDate as lastModi5_4_,
+//                    member0_.city as city6_4_,
+//            member0_.street as street7_4_,
+//                    member0_.zipcode as zipcode8_4_,
+//            member0_.name as name9_4_,
+//                    member0_.endDate as endDate10_4_,
+//            member0_.startDate as startDa11_4_
+//                    from
+//            Member member0_
+//            order by
+//            member0_.member_id desc limit ? offset ?
+//
+//            select * from Member order by member_id desc limit 1 offset 30
+            List<Member> result = em.createQuery("select m from Member m order by m.id desc", Member.class)
+                    .setFirstResult(1)
+                    .setMaxResults(30)
+                    .getResultList();
 
-            member1.getAddress().setCity("zzz-");
-
-            member1.getName();
+            for (Member member : result) {
+                System.out.println("member = " + member);
+            }
 
 //            Movie movie = new Movie();
 //            movie.setName("바람");

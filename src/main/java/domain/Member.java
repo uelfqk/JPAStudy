@@ -63,5 +63,15 @@ public class Member extends BaseEntity {
     public void setOrders(List<Order> orders) {
         this.orders = orders;
     }
+
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", address'" + address + '\'' +
+                '}';
+    }
 }
 // DB에서 시퀀스는 또 뭐지... 알아봐야겠구만
