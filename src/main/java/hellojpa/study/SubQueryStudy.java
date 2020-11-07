@@ -1,25 +1,15 @@
-package hellojpa;
+package hellojpa.study;
 
-import Enums.OrderStatus;
-import domain.*;
-import domain.Items.Book;
-import domain.Items.Item;
+import domain.Member;
+import domain.Team;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
-public class JpaMain {
-
-    public static void main(String[] args) {
-
+public class SubQueryStudy {
+    public void SubQuery() {
         // 웹서버가 실행될때 1개만 생성되는것이다.
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
 
@@ -130,7 +120,7 @@ public class JpaMain {
             //em.createQuery("select mm.name, mm.age from (select m.name, m.age from Member m) as mm")
             //        .getResultList();
 
-           tx.commit();
+            tx.commit();
         } catch (Exception e) {
             tx.rollback();
             e.printStackTrace();
@@ -139,7 +129,5 @@ public class JpaMain {
         }
 
         emf.close();
-
-
     }
 }
