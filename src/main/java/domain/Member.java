@@ -45,6 +45,8 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "team_id")
     private Team team;
 
+    private int age;
+
     public List<AddressEntity> getAddressHistory() {
         return addressHistory;
     }
@@ -124,6 +126,13 @@ public class Member extends BaseEntity {
         this.orders = orders;
     }
 
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
 
     @Override
     public String toString() {

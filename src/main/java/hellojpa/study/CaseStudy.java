@@ -1,6 +1,5 @@
-package hellojpa;
+package hellojpa.study;
 
-import Enums.OrderStatus;
 import domain.*;
 import domain.Items.Book;
 import domain.Items.Item;
@@ -9,17 +8,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
-public class JpaMain {
-
-    public static void main(String[] args) {
-
+public class CaseStudy {
+    public void caseWhenThen() {
         // 웹서버가 실행될때 1개만 생성되는것이다.
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
 
@@ -30,44 +22,6 @@ public class JpaMain {
         tx.begin();
 
         try {
-            // 케이스식
-            Item item = new Book();
-            item.setName("jaa jaql");
-            item.setPrice(10000);
-            item.setStockQuantity(100);
-            em.persist(item);
-
-            Book book = new Book();
-            book.setName("jpa jpql");
-            book.setPrice(10000);
-            book.setStockQuantity(99);
-            book.setAuthor("가나다라");
-            book.setIsbn("isbn");
-            em.persist(book);
-
-            Address address = new Address("city", "street", "zipcode");
-
-            Delivery delivery = new Delivery();
-            delivery.setAddress(address);
-            em.persist(delivery);
-
-            Order order = new Order();
-            order.setDelivery(delivery);
-            order.setStatus(Enums.OrderStatus.ORDER);
-            em.persist(order);
-            
-            OrderItem orderItem = new OrderItem();
-            orderItem.setItem(item);
-            orderItem.setCount(1);
-            orderItem.setOrder(order);
-            em.persist(orderItem);
-
-            OrderItem orderItem1 = new OrderItem();
-            orderItem1.setItem(book);
-            orderItem1.setCount(20);
-            orderItem1.setOrder(order);
-            em.persist(orderItem1);
-
             Member memberRoot = new Member();
             memberRoot.setName("root");
             memberRoot.setAge(29);
@@ -98,7 +52,7 @@ public class JpaMain {
 //                end as col_0_0_
 //                    from
 //                Member member0_
-//            result : 
+//            result :
 //                s = 관리자
 //                s = 일반 사용자
 //
@@ -145,6 +99,45 @@ public class JpaMain {
                 System.out.println("s = " + s);
             }
 
+            tx.commit();
+        } catch (Exception e) {
+            tx.rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+
+        emf.close();
+    }
+
+    public void coalesce() {
+        // 웹서버가 실행될때 1개만 생성되는것이다.
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+
+        EntityManager em = emf.createEntityManager();
+
+        EntityTransaction tx = em.getTransaction();
+        //aaaa
+        tx.begin();
+
+        try {
+            Member memberRoot = new Member();
+            memberRoot.setName("root");
+            memberRoot.setAge(29);
+            em.persist(memberRoot);
+
+            Member memberUser = new Member();
+            memberUser.setName("member");
+            memberUser.setAge(20);
+            em.persist(memberUser);
+
+            Member memberUser2 = new Member();
+            memberUser2.setAge(19);
+            em.persist(memberUser2);
+
+            em.flush();
+            em.clear();
+
 ///* select
 //        coalesce(m.name,
 //        '이름없는 회원')
@@ -167,6 +160,45 @@ public class JpaMain {
             for (String s : resultCoalesce) {
                 System.out.println("s = " + s);
             }
+
+            tx.commit();
+        } catch (Exception e) {
+            tx.rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+
+        emf.close();
+    }
+
+    public void nullIf() {
+        // 웹서버가 실행될때 1개만 생성되는것이다.
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+
+        EntityManager em = emf.createEntityManager();
+
+        EntityTransaction tx = em.getTransaction();
+        //aaaa
+        tx.begin();
+
+        try {
+            Member memberRoot = new Member();
+            memberRoot.setName("root");
+            memberRoot.setAge(29);
+            em.persist(memberRoot);
+
+            Member memberUser = new Member();
+            memberUser.setName("member");
+            memberUser.setAge(20);
+            em.persist(memberUser);
+
+            Member memberUser2 = new Member();
+            memberUser2.setAge(19);
+            em.persist(memberUser2);
+
+            em.flush();
+            em.clear();
 
 ///* select
 //        nullif(m.name,
@@ -207,7 +239,5 @@ public class JpaMain {
         }
 
         emf.close();
-
-
     }
 }
