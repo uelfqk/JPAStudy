@@ -1,6 +1,5 @@
-package hellojpa;
+package hellojpa.study;
 
-import Enums.OrderStatus;
 import domain.*;
 import domain.Items.Book;
 import domain.Items.Item;
@@ -9,18 +8,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class JpaMain {
-
-    public static void main(String[] args) {
-
+public class PathExpressionStudy {
+    public void PathExpression() {
         // 웹서버가 실행될때 1개만 생성되는것이다.
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
 
@@ -55,7 +47,7 @@ public class JpaMain {
             order.setDelivery(delivery);
             order.setStatus(Enums.OrderStatus.ORDER);
             em.persist(order);
-            
+
             OrderItem orderItem = new OrderItem();
             orderItem.setItem(item);
             orderItem.setCount(1);
@@ -261,7 +253,5 @@ public class JpaMain {
         }
 
         emf.close();
-
-
     }
 }
