@@ -11,7 +11,7 @@ public class Address {
     private String city;
     @Column(length = 20)
     private String street;
-    @Column(length = 5)
+    @Column(length = 10)
     private String zipcode;
 
     public Address(String city, String street, String zipcode) {
@@ -19,8 +19,6 @@ public class Address {
         this.street = street;
         this.zipcode = zipcode;
     }
-
-
 
     public String fullAddress() {
         return getCity() + " " + getStreet() + " " + getZipcode();
@@ -48,6 +46,9 @@ public class Address {
         return Objects.equals(getCity(), address.getCity()) &&
                 Objects.equals(getStreet(), address.getStreet()) &&
                 Objects.equals(getZipcode(), address.getZipcode());
+    }
+
+    protected Address() {
     }
 
     @Override
