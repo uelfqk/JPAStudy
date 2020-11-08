@@ -1,6 +1,5 @@
-package hellojpa;
+package hellojpa.study;
 
-import Enums.OrderStatus;
 import domain.*;
 import domain.Items.Book;
 import domain.Items.Item;
@@ -9,18 +8,31 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-public class JpaMain {
+public class FetchJoinStudy {
 
-    public static void main(String[] args) {
+    public void fetchJoinInit() {
+        // 페치 조인 (join fetch)
+        // SQL 조인 종류 X
+        // JPQL에서 성능 최적화를 위해 제공하는 전용 기능
+        // 연관된 엔티티나 컬렉션을 SQL 한 번에 함께 조회하는 기능
+        // join fetch 명령어 사용
+        // 페치 조인 - left join fetch(외부조인), right join fetch(외부조인), join fetch(내부조인)
 
+        // 페치 조인과 조인의 차이
+        // 일반 조인 실행시 연관된 엔티티를 함께 조회하지 않음
+        // JQPL : select t from Team t join t.members m where t.name = 'TeamA'
+        // SQL : select * from Team t inner join Member m on t.team_id = m.team_id where t.name = 'TeamA'
+        // 페치 조인을 사용할 때만 연관된 엔티티도 함께 조회(즉시로딩)
+        // 페치 조인은 객체 그래프를 SQL 한번에 조회하는 개념
+
+        // JPQL은 결과를 반환할때 연관관계를 고려하지 않음
+        // 단지 select 절에 지정한 엔티티만 조회할 뿐
+        // 여기서는 팀 엔티티만 조회하고, 회원 엔티티는 조회하지 않음
+    }
+
+    public void fetchJoinStart() {
         // 웹서버가 실행될때 1개만 생성되는것이다.
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
 
@@ -31,43 +43,6 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Item item = new Book();
-            item.setName("jaa jaql");
-            item.setPrice(10000);
-            item.setStockQuantity(100);
-            em.persist(item);
-
-            Book book = new Book();
-            book.setName("jpa jpql");
-            book.setPrice(10000);
-            book.setStockQuantity(99);
-            book.setAuthor("가나다라");
-            book.setIsbn("isbn");
-            em.persist(book);
-
-            Address address = new Address("city", "street", "zipcode");
-
-            Delivery delivery = new Delivery();
-            delivery.setAddress(address);
-            em.persist(delivery);
-
-            Order order = new Order();
-            order.setDelivery(delivery);
-            order.setStatus(Enums.OrderStatus.ORDER);
-            em.persist(order);
-            
-            OrderItem orderItem = new OrderItem();
-            orderItem.setItem(item);
-            orderItem.setCount(1);
-            orderItem.setOrder(order);
-            em.persist(orderItem);
-
-            OrderItem orderItem1 = new OrderItem();
-            orderItem1.setItem(book);
-            orderItem1.setCount(20);
-            orderItem1.setOrder(order);
-            em.persist(orderItem1);
-
             Team teamA = new Team();
             teamA.setName("TeamA");
             em.persist(teamA);
@@ -96,13 +71,96 @@ public class JpaMain {
 
             em.flush();
             em.clear();
+///* select
+//        m
+//    from
+//        Member m
+//    join
+//        fetch m.team */ select
+//            member0_.member_id as member_i1_5_0_,
+//                    team1_.team_id as team_id1_10_1_,
+//            member0_.createBy as createBy2_5_0_,
+//                    member0_.createDate as createDa3_5_0_,
+//            member0_.lastModifyBy as lastModi4_5_0_,
+//                    member0_.lastModifyDate as lastModi5_5_0_,
+//            member0_.city as city6_5_0_,
+//                    member0_.street as street7_5_0_,
+//            member0_.zipcode as zipcode8_5_0_,
+//                    member0_.age as age9_5_0_,
+//            member0_.name as name10_5_0_,
+//                    member0_.team_id as team_id13_5_0_,
+//            member0_.endDate as endDate11_5_0_,
+//                    member0_.startDate as startDa12_5_0_,
+//            team1_.name as name2_10_1_
+//                    from
+//            Member member0_
+//            inner join
+//            Team team1_
+//            on member0_.team_id=team1_.team_id
+//          result :
+//            member = Member{id=9, name='root', address'null'}
+//            member = Member{id=10, name='user1', address'null'}
+//            member = Member{id=11, name='user2', address'null'}
+//
+//            회원을 조회할대 팀의 정보까지 함께 조회
+//            select * from Member m join Team t on m.team_id = t.team_id
+            List<Member> resultFetchJoin = em.createQuery("select m from Member m join fetch m.team", Member.class)
+                    .getResultList();
 
-            // 페치 조인 (join fetch)
-            // SQL 조인 종류 X
-            // JPQL에서 성능 최적화를 위해 제공하는 전용 기능
-            // 연관된 엔티티나 컬렉션을 SQL 한 번에 함께 조회하는 기능
-            // join fetch 명령어 사용
-            // 페치 조인 - left join fetch(외부조인), right join fetch(외부조인), join fetch(내부조인)
+            for (Member member : resultFetchJoin) {
+                System.out.println("member = " + member);
+            }
+
+            tx.commit();
+        } catch (Exception e) {
+            tx.rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+
+        emf.close();
+    }
+
+    public void fetchJoinNpuls1Problem() {
+        // 웹서버가 실행될때 1개만 생성되는것이다.
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+
+        EntityManager em = emf.createEntityManager();
+
+        EntityTransaction tx = em.getTransaction();
+        //aaaa
+        tx.begin();
+
+        try {
+            Team teamA = new Team();
+            teamA.setName("TeamA");
+            em.persist(teamA);
+
+            Team teamB = new Team();
+            teamB.setName("TeamB");
+            em.persist(teamB);
+
+            Member memberRoot = new Member();
+            memberRoot.setName("root");
+            memberRoot.setAge(29);
+            memberRoot.changeTeam(teamA);
+            em.persist(memberRoot);
+
+            Member memberUser = new Member();
+            memberUser.setName("user1");
+            memberUser.setAge(20);
+            memberUser.changeTeam(teamB);
+            em.persist(memberUser);
+
+            Member memberUser2 = new Member();
+            memberUser2.setName("user2");
+            memberUser2.setAge(19);
+            memberUser2.changeTeam(teamA);
+            em.persist(memberUser2);
+
+            em.flush();
+            em.clear();
 
 ///* select
 //        m
@@ -168,46 +226,56 @@ public class JpaMain {
                 // member[3] => getTeam().getName()[TeamA] => 영속성 컨텍스트 1차 캐시에 TeamA Entity 반환
             }
 
-///* select
-//        m
-//    from
-//        Member m
-//    join
-//        fetch m.team */ select
-//            member0_.member_id as member_i1_5_0_,
-//                    team1_.team_id as team_id1_10_1_,
-//            member0_.createBy as createBy2_5_0_,
-//                    member0_.createDate as createDa3_5_0_,
-//            member0_.lastModifyBy as lastModi4_5_0_,
-//                    member0_.lastModifyDate as lastModi5_5_0_,
-//            member0_.city as city6_5_0_,
-//                    member0_.street as street7_5_0_,
-//            member0_.zipcode as zipcode8_5_0_,
-//                    member0_.age as age9_5_0_,
-//            member0_.name as name10_5_0_,
-//                    member0_.team_id as team_id13_5_0_,
-//            member0_.endDate as endDate11_5_0_,
-//                    member0_.startDate as startDa12_5_0_,
-//            team1_.name as name2_10_1_
-//                    from
-//            Member member0_
-//            inner join
-//            Team team1_
-//            on member0_.team_id=team1_.team_id
-//          result :
-//            member = Member{id=9, name='root', address'null'}
-//            member = Member{id=10, name='user1', address'null'}
-//            member = Member{id=11, name='user2', address'null'}
-//
-//            회원을 조회할대 팀의 정보까지 함께 조회
-//            select * from Member m join Team t on m.team_id = t.team_id
-            List<Member> resultFetchJoin = em.createQuery("select m from Member m join fetch m.team", Member.class)
-                    .getResultList();
+            tx.commit();
+        } catch (Exception e) {
+            tx.rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
 
-            for (Member member : resultFetchJoin) {
-                System.out.println("member = " + member);
-            }
+        emf.close();
+    }
 
+    public void fetchJoinNplus1ProblemClear1() {
+        // 웹서버가 실행될때 1개만 생성되는것이다.
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+
+        EntityManager em = emf.createEntityManager();
+
+        EntityTransaction tx = em.getTransaction();
+        //aaaa
+        tx.begin();
+
+        try {
+            Team teamA = new Team();
+            teamA.setName("TeamA");
+            em.persist(teamA);
+
+            Team teamB = new Team();
+            teamB.setName("TeamB");
+            em.persist(teamB);
+
+            Member memberRoot = new Member();
+            memberRoot.setName("root");
+            memberRoot.setAge(29);
+            memberRoot.changeTeam(teamA);
+            em.persist(memberRoot);
+
+            Member memberUser = new Member();
+            memberUser.setName("user1");
+            memberUser.setAge(20);
+            memberUser.changeTeam(teamB);
+            em.persist(memberUser);
+
+            Member memberUser2 = new Member();
+            memberUser2.setName("user2");
+            memberUser2.setAge(19);
+            memberUser2.changeTeam(teamA);
+            em.persist(memberUser2);
+
+            em.flush();
+            em.clear();
 ///* select
 //        t
 //    from
@@ -260,6 +328,57 @@ public class JpaMain {
                 }
             }
 
+            tx.commit();
+        } catch (Exception e) {
+            tx.rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+
+        emf.close();
+    }
+
+    // 일대다 관계에서 fetch join 시 중복제거
+    public void fetchJoinUseDistinct() {
+        // 웹서버가 실행될때 1개만 생성되는것이다.
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+
+        EntityManager em = emf.createEntityManager();
+
+        EntityTransaction tx = em.getTransaction();
+        //aaaa
+        tx.begin();
+
+        try {
+            Team teamA = new Team();
+            teamA.setName("TeamA");
+            em.persist(teamA);
+
+            Team teamB = new Team();
+            teamB.setName("TeamB");
+            em.persist(teamB);
+
+            Member memberRoot = new Member();
+            memberRoot.setName("root");
+            memberRoot.setAge(29);
+            memberRoot.changeTeam(teamA);
+            em.persist(memberRoot);
+
+            Member memberUser = new Member();
+            memberUser.setName("user1");
+            memberUser.setAge(20);
+            memberUser.changeTeam(teamB);
+            em.persist(memberUser);
+
+            Member memberUser2 = new Member();
+            memberUser2.setName("user2");
+            memberUser2.setAge(19);
+            memberUser2.changeTeam(teamA);
+            em.persist(memberUser2);
+
+            em.flush();
+            em.clear();
 ///* select
 //        distinct t
 //    from
@@ -312,9 +431,57 @@ public class JpaMain {
                 }
             }
 
+            tx.commit();
+        } catch (Exception e) {
+            tx.rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+
+        emf.close();
+    }
+
+    // SQL 조인과 JPQL 페치 조인 비교
+    public void fetchJoinvsSqlJoinCompare() {
+        // 웹서버가 실행될때 1개만 생성되는것이다.
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+
+        EntityManager em = emf.createEntityManager();
+
+        EntityTransaction tx = em.getTransaction();
+        //aaaa
+        tx.begin();
+
+        try {
+            Team teamA = new Team();
+            teamA.setName("TeamA");
+            em.persist(teamA);
+
+            Team teamB = new Team();
+            teamB.setName("TeamB");
+            em.persist(teamB);
+
+            Member memberRoot = new Member();
+            memberRoot.setName("root");
+            memberRoot.setAge(29);
+            memberRoot.changeTeam(teamA);
+            em.persist(memberRoot);
+
+            Member memberUser = new Member();
+            memberUser.setName("user1");
+            memberUser.setAge(20);
+            memberUser.changeTeam(teamB);
+            em.persist(memberUser);
+
+            Member memberUser2 = new Member();
+            memberUser2.setName("user2");
+            memberUser2.setAge(19);
+            memberUser2.changeTeam(teamA);
+            em.persist(memberUser2);
+
             em.flush();
             em.clear();
-
 ///* select
 //        t
 //    from
@@ -383,7 +550,7 @@ public class JpaMain {
                     .getResultList();
 
             System.out.println("resultTeamSqlJoin.size() = " + resultTeamSqlJoin.size());
-            
+
             for (Team team : resultTeamSqlJoin) {
                 System.out.println("team.getName() = " + team.getName());
                 for (Member member : team.getMembers()) {
@@ -391,16 +558,7 @@ public class JpaMain {
                 }
             }
 
-            // 페치 조인과 조인의 차이
-            // 일반 조인 실행시 연관된 엔티티를 함께 조회하지 않음
-            // JQPL : select t from Team t join t.members m where t.name = 'TeamA'
-            // SQL : select * from Team t inner join Member m on t.team_id = m.team_id where t.name = 'TeamA'
-            // 페치 조인을 사용할 때만 연관된 엔티티도 함께 조회(즉시로딩)
-            // 페치 조인은 객체 그래프를 SQL 한번에 조회하는 개념
 
-            // JPQL은 결과를 반환할때 연관관계를 고려하지 않음
-            // 단지 select 절에 지정한 엔티티만 조회할 뿐
-            // 여기서는 팀 엔티티만 조회하고, 회원 엔티티는 조회하지 않음
 
 
             tx.commit();
@@ -412,6 +570,5 @@ public class JpaMain {
         }
 
         emf.close();
-
     }
 }
