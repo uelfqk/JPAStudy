@@ -1,6 +1,5 @@
-package hellojpa;
+package hellojpa.study;
 
-import Enums.OrderStatus;
 import domain.*;
 import domain.Items.Book;
 import domain.Items.Item;
@@ -9,18 +8,24 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-public class JpaMain {
+public class EntityDirectUseStudy {
 
-    public static void main(String[] args) {
+    public void entityDirectUseInit() {
+        // Init
+        // JPQL에서 엔티티 직접 사용 - 기본 키 값
+        // JPQL에서 엔티티를 직접 사용하면 SQL에서 해당 엔티티의 기본 키 값을 사용
+        // JPQL : select count(m) from Member m; m -> m.id
+        // JPQL : select count(m.id) from Member m;
+        // SQL  : select count(m.member_id) from Member m;
+        // 엔티티로 기입하면 엔티티의 기본 키 값 (PK)를 사용
+        // 엔티티의 외래키 값을 사용할 수 있음
+        // Ex) select m from Member m where m.team = ?
+        // m.team 은 실제 m.team.id
+    }
 
+    public void entityDirectUse() {
         // 웹서버가 실행될때 1개만 생성되는것이다.
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
 
@@ -55,7 +60,7 @@ public class JpaMain {
             order.setDelivery(delivery);
             order.setStatus(Enums.OrderStatus.ORDER);
             em.persist(order);
-            
+
             OrderItem orderItem = new OrderItem();
             orderItem.setItem(item);
             orderItem.setCount(1);
@@ -154,6 +159,5 @@ public class JpaMain {
         }
 
         emf.close();
-
     }
 }
