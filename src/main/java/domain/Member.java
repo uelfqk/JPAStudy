@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
+@NamedQuery(
+        name = "Member.findByUserName",
+        query = "select m from Member m where m.name = :name"
+)
 public class Member extends BaseEntity {
 
     @Id
@@ -139,6 +143,7 @@ public class Member extends BaseEntity {
         return "Member{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", age='" + age + '\'' +
                 ", address'" + address + '\'' +
                 '}';
     }
